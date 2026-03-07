@@ -1,0 +1,92 @@
+# BACKUP IMPORTARDECHINA.COM
+Fecha: 2026-02-23 17:41 EST
+Versión: Production
+Commit: da3a792
+
+## CONTENIDO DEL BACKUP
+
+### Código Fuente
+- App Next.js 16.1.6 completo
+- 259 páginas estáticas
+- API routes (Stripe, Resend, webhooks)
+- Templates PDF system
+- Componentes React
+
+### Productos Generados
+/public/products/
+- email-templates-proveedores-china.pdf (322 KB)
+- calculadora-costos-importacion.xlsx (7.6 KB)
+- checklist-control-calidad.pdf (211 KB)
+- checklist-control-calidad.xlsx (6.7 KB)
+- due-diligence-proveedor.pdf (236 KB)
+- due-diligence-proveedor.xlsx (6.8 KB)
+
+### Contenido Markdown
+/content/
+- file_97 - Email Templates (26 KB)
+- file_98 - Calculadora (17 KB)
+- file_99 - Checklist QC (18 KB)
+- file_100 - Due Diligence (22 KB)
+
+### Templates PDF
+/templates/pdf/
+- base.html
+- styles/base.css
+- assets/icons.js
+
+### Configuración
+- .env.local (Stripe live keys, Resend API)
+- next.config.js
+- tailwind.config.ts
+- package.json + lock
+
+### Scripts
+- generate-all-professional.mjs
+- generate-products-professional.mjs
+
+### Documentación
+- README.md
+- ESTADO-SISTEMA-2026-02-23.md
+- UPDATE-2026-02-23-templates.md
+- ENLACES-PRODUCTOS.md
+- templates/README.md
+
+## NO INCLUIDO (excluido del backup)
+- node_modules/ (reinstalar con npm install)
+- .next/ (regenerar con npm run build)
+- .vercel/ (config local Vercel)
+- .git/ (en backup separado)
+
+## RESTAURAR
+
+1. Extraer backup:
+   tar -xzf importar-china-backup-YYYYMMDD-HHMMSS.tar.gz
+
+2. Instalar dependencias:
+   cd importar-china-web
+   npm install
+
+3. Configurar .env.local:
+   - STRIPE_SECRET_KEY=sk_live_...
+   - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+   - RESEND_API_KEY=re_...
+   - NEXT_PUBLIC_BASE_URL=https://importardechina.com
+
+4. Build:
+   npm run build
+
+5. Deploy:
+   export VERCEL_TOKEN=...
+   npx vercel --prod --yes
+
+## GIT REPOSITORY
+Backup separado incluye historial completo:
+- 20+ commits
+- Todas las ramas
+- Remote origin
+
+## NOTAS
+- Backup automático diario recomendado
+- Mantener últimos 7 backups
+- Stripe webhooks requieren re-configuración si cambias dominio
+- DNS apunta a Vercel (configurar después de restore)

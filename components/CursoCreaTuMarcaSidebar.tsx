@@ -1,0 +1,99 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { modulos } from '@/lib/crea-tu-marca-data';
+
+export function CursoCreaTuMarcaSidebar() {
+  const pathname = usePathname();
+  const todasLecciones = modulos.flatMap(m => m.lecciones);
+  
+  const getCurrentIndex = () => {
+    return todasLecciones.findIndex(l => pathname.includes(l.slug));
+  };
+  
+  const currentIndex = getCurrentIndex();
+  const progress = currentIndex >= 0 ? Math.round(((currentIndex + 1) / todasLecciones.length) * 100) : 0;
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-6">
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-semibold text-gray-900">Progreso del Curso</span>
+          <span className="text-sm font-bold text-blue-600">{progress}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2.5">
+          <div 
+            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          Lección {currentIndex >= 0 ? currentIndex + 1 : 1} de {todasLecciones.length}
+        </p>
+      </div>
+
+      {/* Lessons List */}
+      <div className="space-y-4 max-h-[calc(100vh-300px)] overflow-y-auto">
+        {modulos.map((modulo, idx) => (
+          <div key={idx}>
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-2">
+              {modulo.titulo}
+            </h3>
+            <div className="space-y-1">
+              {modulo.lecciones.map((leccion) => {
+                const leccionIndex = todasLecciones.findIndex(l => l.slug === leccion.slug);
+                const isCurrent = pathname.includes(leccion.slug);
+                const isPast = leccionIndex < currentIndex;
+                
+                return (
+                  <Link
+                    key={leccion.slug}
+                    href={`/curso-crea-tu-marca/leccion/${leccion.slug}`}
+                    className={`
+                      block px-3 py-2 rounded-lg text-sm transition-colors
+                      ${isCurrent 
+                        ? 'bg-blue-100 text-blue-900 font-semibold' 
+                        : isPast
+                        ? 'text-gray-600 hover:bg-gray-50'
+                        : 'text-gray-500 hover:bg-gray-50'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`
+                        flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
+                        ${isCurrent 
+                          ? 'bg-blue-600 text-white' 
+                          : isPast
+                          ? 'bg-green-100 text-green-600'
+                          : 'bg-gray-100 text-gray-400'
+                        }
+                      `}>
+                        {isPast && !isCurrent ? '✓' : leccion.numero}
+                      </span>
+                      <span className="line-clamp-2 flex-1">
+                        {leccion.titulo}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Back to Index */}
+      <div className="mt-6 pt-6 border-t border-gray-100">
+        <Link 
+          href="/curso-crea-tu-marca"
+          className="block text-center text-sm text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          ← Volver al índice
+        </Link>
+      </div>
+    </div>
+  );
+}

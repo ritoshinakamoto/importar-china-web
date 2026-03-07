@@ -1,0 +1,20 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/send-emails",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/jane-inbox",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/jane-inbox",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron/jane-inbox",
+      "schedule": "0 5 * * *"
+    }
+  ]
+}
