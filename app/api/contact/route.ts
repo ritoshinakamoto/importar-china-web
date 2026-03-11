@@ -16,11 +16,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Enviar email a Jane con BCC a Jorge
+    // Enviar email a Jorge
     const { data, error } = await resend.emails.send({
       from: 'Formulario Web <contacto@importardechina.com>',
-      to: ['jane.importardechina@agentmail.to'],
-      bcc: ['jomorben@proton.me'], // Copia oculta a Jorge
+      to: ['jorge@importardechina.com'],
       replyTo: email, // Responder directo al cliente
       subject: `📬 Nuevo contacto: ${nombre}`,
       html: `
