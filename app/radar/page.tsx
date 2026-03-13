@@ -136,8 +136,101 @@ function ProductCard({ product, index, isLocked, onClick }: any) {
   );
 }
 
+function ProductDetail({ product, onClose }: any) {
+  const [units, setUnits] = useState(product.moq);
+  const shippingPerUnit = 1.20;
+  const tariffRate = 0.04;
+  const vatRate = 0.21;
+  const costPerUnit = product.priceOrigin + shippingPerUnit + (product.priceOrigin * tariffRate);
+  const costTotal = costPerUnit * units;
+  const costWithVat = costTotal * (1 + vatRate);
+  const revenue = product.priceDest * units;
+  const profit = revenue - costWithVat;
+  const realMargin = ((profit / revenue) * 100).toFixed(1);
+  const breakeven = Math.ceil(costWithVat / product.priceDest);
+  const badge = badgeConfig[product.badge as keyof typeof badgeConfig];
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(12px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }} onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} style={{ background: "#13131a", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 24, maxWidth: 640, width: "100%", maxHeight: "90vh", overflowY: "auto", padding: 32 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 24 }}>
+          <div>
+            <div style={{ fontSize: 11, color: badge.color, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>
+              {badge.label}
+            </div>
+            <h2 style={{ fontSize: 24, fontWeight: 800, color: "#fff", margin: 0 }}>{product.name}</h2>
+            <div style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>{product.category}</div>
+          </div>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.06)", border: "none", color: "#fff", width: 36, height: 36, borderRadius: 99, cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+        </div>
+
+        <div style={{ display: "flex", gap: 24, marginBottom: 28, alignItems: "center", flexWrap: "wrap" }}>
+          <ScoreRing score={product.score} size={80} />
+          <div style={{ display: "flex", gap: 12, flex: 1, flexWrap: "wrap" }}>
+            <MiniBar value={product.demand} label="Demanda" color="#4FC3F7" />
+            <MiniBar value={product.margin} label="Margen" color="#00C853" />
+            <MiniBar value={100 - product.competition} label="Baja compet." color="#FF4D00" />
+            <MiniBar value={product.ease} label="Facilidad" color="#AB47BC" />
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12, marginBottom: 28 }}>
+          {[
+            { label: "Precio origen", value: `${product.priceOrigin.toFixed(2)}€`, sub: "Alibaba/1688" },
+            { label: "Precio destino", value: `${product.priceDest.toFixed(2)}€`, sub: "Amazon ES" },
+            { label: "MOQ", value: `${product.moq} uds`, sub: "Mínimo pedido" },
+            { label: "Sellers activos", value: product.sellers, sub: "Amazon ES" },
+            { label: "Búsquedas/mes", value: product.searches?.toLocaleString(), sub: "Amazon ES" },
+            { label: "Tendencia", value: product.trend === "up" ? "↗ Creciente" : "→ Estable", sub: "Últimos 90 días" },
+          ].map((item, i) => (
+            <div key={i} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "14px 16px", border: "1px solid rgba(255,255,255,0.04)" }}>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{item.label}</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>{item.value}</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{item.sub}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: "rgba(255,77,0,0.05)", border: "1px solid rgba(255,77,0,0.15)", borderRadius: 16, padding: 24, marginBottom: 24 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#FF4D00", margin: "0 0 16px 0" }}>
+            📊 Calculadora de márgenes
+          </h3>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", display: "block", marginBottom: 6 }}>
+              Cantidad de unidades: <strong style={{ color: "#fff" }}>{units}</strong>
+            </label>
+            <input type="range" min={product.moq} max={product.moq * 10} value={units}
+              onChange={e => setUnits(Number(e.target.value))}
+              style={{ width: "100%", accentColor: "#FF4D00" }} />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "rgba(255,255,255,0.3)" }}>
+              <span>{product.moq} (MOQ)</span><span>{product.moq * 10}</span>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12 }}>
+            {[
+              { label: "Coste unitario total", value: `${costPerUnit.toFixed(2)}€`, desc: "prod + envío + arancel" },
+              { label: "Inversión total", value: `${costWithVat.toFixed(0)}€`, desc: `${units} uds con IVA` },
+              { label: "Facturación est.", value: `${revenue.toFixed(0)}€`, desc: `a ${product.priceDest}€/ud` },
+              { label: "Beneficio neto", value: `${profit.toFixed(0)}€`, desc: `margen real ${realMargin}%`, highlight: true },
+              { label: "Punto equilibrio", value: `${breakeven} uds`, desc: "para recuperar inversión" },
+              { label: "ROI estimado", value: `${((profit / costWithVat) * 100).toFixed(0)}%`, desc: "retorno inversión", highlight: true },
+            ].map((item, i) => (
+              <div key={i} style={{ background: item.highlight ? "rgba(0,200,83,0.08)" : "rgba(255,255,255,0.03)", borderRadius: 10, padding: 12, border: `1px solid ${item.highlight ? "rgba(0,200,83,0.2)" : "rgba(255,255,255,0.04)"}` }}>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{item.label}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: item.highlight ? "#00C853" : "#fff", marginTop: 4 }}>{item.value}</div>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginTop: 2 }}>{item.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ChinaRadarPage() {
   const [showPaywall, setShowPaywall] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   return (
     <div style={{ fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif", background: "#08080c", color: "#fff", minHeight: "100vh" }}>
@@ -178,7 +271,13 @@ export default function ChinaRadarPage() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {products.map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} isLocked={i >= freeLimit} onClick={() => i >= freeLimit && setShowPaywall(true)} />
+            <ProductCard 
+              key={p.id} 
+              product={p} 
+              index={i} 
+              isLocked={i >= freeLimit} 
+              onClick={() => i >= freeLimit ? setShowPaywall(true) : setSelectedProduct(p)} 
+            />
           ))}
         </div>
       </div>
@@ -212,6 +311,10 @@ export default function ChinaRadarPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {selectedProduct && (
+        <ProductDetail product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       )}
     </div>
   );
