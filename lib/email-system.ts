@@ -64,7 +64,7 @@ export interface EmailSend {
 /**
  * Añadir nuevo subscriber
  */
-export async function addSubscriber(email: string, name?: string) {
+export async function addSubscriber(email: string, name?: string): Promise<Subscriber> {
   const { data, error } = await supabase
     .from('subscribers')
     .insert({
