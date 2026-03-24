@@ -141,6 +141,7 @@ export async function POST(request: Request) {
       console.log(`[SENT] Welcome email sent: ${resendMessageId}`);
 
       // 5. Registrar envío en email_sends
+      // @ts-ignore - Supabase proxy typing issue
       await supabase.from('email_sends').insert({
         subscriber_id: subscriber.id,
         campaign_id: 'welcome',
