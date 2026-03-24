@@ -2,13 +2,13 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_KEY || ''
-);
-
 export async function POST(request: Request) {
   try {
+    // Initialize Supabase client (lazy initialization to avoid build-time errors)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    );
     const { event_type, event_data } = await request.json();
     
     // Get user from cookie or IP (for anonymous tracking)
