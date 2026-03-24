@@ -14,6 +14,13 @@ export async function POST(request: Request) {
 
     // 1. Añadir subscriber a Supabase
     const subscriber = await addSubscriber(email, name);
+    
+    if (!subscriber || !subscriber.id) {
+      return NextResponse.json(
+        { error: 'Failed to add subscriber' },
+        { status: 500 }
+      );
+    }
 
     // 2. Check si ya se envió welcome email (prevenir duplicados)
     const { data: existingSend } = await supabase
