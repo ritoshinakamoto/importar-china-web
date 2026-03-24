@@ -14,9 +14,9 @@ export function getSupabase() {
   return createClient(supabaseUrl, supabaseKey);
 }
 
-// For internal use within this module (initialized lazily when functions are called)
+// For backward compatibility: lazy-initialized Proxy (avoids build-time evaluation)
 let _supabaseInstance: ReturnType<typeof createClient> | null = null;
-const supabase = new Proxy({} as ReturnType<typeof createClient>, {
+export const supabase = new Proxy({} as ReturnType<typeof createClient>, {
   get(target, prop) {
     if (!_supabaseInstance) {
       _supabaseInstance = getSupabase();
