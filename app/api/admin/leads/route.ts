@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_KEY || ''
-);
-
 function calculateLeadScore(subscriber: any, events: any[]): number {
   let score = 0;
   
@@ -62,8 +57,14 @@ function getLeadStatus(score: number): 'hot' | 'warm' | 'cold' {
 
 export async function GET() {
   try {
+    // Initialize Supabase client (lazy initialization to avoid build-time errors)
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    );
+
     // Get all subscribers
-    const { data: subscribers, error: subError } = await supabase
+    const { data: subscribers, error: subError} = await supabase
       .from('subscribers')
       .select('*')
       .order('subscribed_at', { ascending: false });
