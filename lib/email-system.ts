@@ -7,10 +7,23 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || '';
+// Lazy getter to avoid build-time initialization
+export function getSupabase() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  return createClient(supabaseUrl, supabaseKey);
+}
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// For internal use within this module (initialized lazily when functions are called)
+let _supabaseInstance: ReturnType<typeof createClient> | null = null;
+const supabase = new Proxy({} as ReturnType<typeof createClient>, {
+  get(target, prop) {
+    if (!_supabaseInstance) {
+      _supabaseInstance = getSupabase();
+    }
+    return _supabaseInstance[prop as keyof typeof _supabaseInstance];
+  }
+});
 
 // Tipos
 export interface Subscriber {

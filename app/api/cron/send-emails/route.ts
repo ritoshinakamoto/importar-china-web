@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { processEmailQueue, determineWinner, supabase } from '@/lib/email-system';
+import { processEmailQueue, determineWinner, getSupabase } from '@/lib/email-system';
 
 /**
  * Cron job para envío automático de emails
@@ -29,6 +29,7 @@ export async function GET(request: Request) {
     const results = await processEmailQueue();
 
     // Auto-optimización: determinar ganadores A/B test
+    const supabase = getSupabase();
     const { data: campaigns } = await supabase
       .from('email_campaigns')
       .select('*')
