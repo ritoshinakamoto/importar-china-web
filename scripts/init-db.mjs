@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://rhkizawlmwjwrgkamhce.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoa2l6YXdsbXdqd3Jna2FtaGNlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTcwNDE0MCwiZXhwIjoyMDg3MjgwMTQwfQ.FHQI69N0svg8N_hCkKtWl50t13kuvakMP027f4MaLYw';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: { persistSession: false }
@@ -24,11 +24,9 @@ try {
   if (error) {
     console.log('❌ Tablas no existen aún. Deben crearse manualmente en Supabase SQL Editor.');
     console.log('\n📋 Instrucciones:');
-    console.log('1. Ve a: https://supabase.com/dashboard/project/rhkizawlmwjwrgkamhce/editor/sql');
-    console.log('2. Abre el archivo: /data/.openclaw/workspace/importar-china-web/supabase/schema.sql');
-    console.log('3. Copia todo el contenido');
-    console.log('4. Pégalo en SQL Editor');
-    console.log('5. Click "Run"');
+    console.log('1. Conéctate al servidor: ssh root@178.104.97.73');
+    console.log('2. Ejecuta: docker cp supabase/schema.sql supabase-db-o11wgfe1c5hz70vqjp7ujvl2:/tmp/schema.sql');
+    console.log('3. Ejecuta: docker exec supabase-db-o11wgfe1c5hz70vqjp7ujvl2 psql -U postgres -d postgres -f /tmp/schema.sql');
     console.log('\n⏳ Esperando que completes estos pasos...');
     process.exit(1);
   }
