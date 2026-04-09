@@ -7,7 +7,7 @@ export const blogCTAConfig = {
   // Banner sticky (bottom, mobile + desktop)
   stickyBanner: {
     enabled: true,
-    title: "📋 Checklist Gratuito",
+    title: "Calcula exactamente cuánto te cuesta importar de China",
     description: "Evalúa proveedores chinos en 5 minutos",
     buttonText: "Descargar Gratis",
     buttonUrl: "/checklist",
@@ -20,7 +20,7 @@ export const blogCTAConfig = {
   // Sidebar (desktop only)
   sidebar: {
     enabled: true,
-    title: "🎁 Recurso Gratuito",
+    title: "Calcula exactamente cuánto te cuesta importar de China",
     description: "Descarga nuestro checklist completo para evaluar proveedores chinos y evitar errores costosos.",
     bullets: [
       "✓ Verificación de calidad",
@@ -38,6 +38,6 @@ export const blogCTAConfig = {
   relatedPosts: {
     enabled: true,
     maxPosts: 3,
-    title: "Sigue Leyendo",
+    title: "Calcula exactamente cuánto te cuesta importar de China",
   },
 } as const;
